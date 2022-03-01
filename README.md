@@ -1,6 +1,6 @@
 # demo
 // Mở terminal trong vscode
 
-npm init
+npm install
 
 npm rundev
