@@ -21,12 +21,14 @@ io.on('connection', socket => {
         const user = userJoin(socket.id, username, room);
 
         socket.join(user.room);
+        //Show danh sach room dang co:
+        //console.log(socket.adapter.rooms);
 
         //Welcome current user
-        socket.emit('message', formatMessage(botname,'Welcome to Chatroom !'));
+        socket.emit('server2client', formatMessage(botname,'Chào mừng bạn đến cuộc vui!'));
 
         //Broadcast when user connects
-        socket.broadcast.to(user.room).emit('message', formatMessage(botname,`${user.username} has joined the chat`));
+        socket.broadcast.to(user.room).emit('server2client', formatMessage(botname,`${user.username} đã tham gia nhậu`));
 
         //Send users and room in4
         io.to(user.room).emit('roomUsers', {
@@ -36,10 +38,10 @@ io.on('connection', socket => {
     });
 
     //listen for chatMessage
-    socket.on('chatMessage', (msg) => {
+    socket.on('client2server', (msg) => {
         const user = getCurrentUser(socket.id);
 
-        io.to(user.room).emit('message', formatMessage(user.username, msg));
+        io.to(user.room).emit('server2client', formatMessage(user.username, msg));
     });
 
     //Runs when client disconnects
@@ -47,7 +49,7 @@ io.on('connection', socket => {
         const user = userLeave(socket.id);
 
         if(user) {
-            io.to(user.room).emit('message', formatMessage(botname,`${user.username} has left the chat`));
+            io.to(user.room).emit('server2client', formatMessage(botname,`${user.username} đã rời khỏi cuộc vui !`));
 
             //Send users and room in4
             io.to(user.room).emit('roomUsers', {
